@@ -1,4 +1,4 @@
-# Android ToolTips
+# Android ToolTips [Play Store Demo](https://play.google.com/store/apps/details?id=com.ryanharter.android.tooltips.sample)
 
 ToolTips is an Open Source Android library that allows developers to easily display tooltips for views.
 
