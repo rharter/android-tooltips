@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+// TODO Change this back to the main script once the PR is merged.
+apply from: 'https://raw.githubusercontent.com/jpardogo/gradle-mvn-push/master/gradle-mvn-push.gradle'
 
 android {
     compileSdkVersion 20
