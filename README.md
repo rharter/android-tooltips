@@ -2,6 +2,26 @@
 
 ToolTips is an Open Source Android library that allows developers to easily display tooltips for views.
 
+## Getting It
+
+Android ToolTips is available on Maven Central, so you can use the normal methods to acquire the library.
+
+Gradle
+
+```
+compile 'com.ryanharter.android.tooltips:library:0.0.1'
+```
+
+Maven 
+
+```
+<dependency>
+    <groupId>com.ryanharter.android.tooltips</groupId>
+    <artifactId>library</artifactId>
+    <version>0.0.1</version>
+</dependency>
+```
+
 ## Usage
 
 1. Add a `com.ryanharter.android.tooltips.ToolTipLayout` view to your layout such that it fills the view view and overlays everything else.
