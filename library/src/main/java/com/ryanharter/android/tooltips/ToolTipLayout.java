@@ -61,7 +61,7 @@ public class ToolTipLayout extends RelativeLayout {
      */
     public void dismiss(boolean animate) {
         mToolTips.clear();
-        
+
         if (animate) {
 
             final List<View> viewsToRemove = new ArrayList<>();
