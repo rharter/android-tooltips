@@ -60,27 +60,38 @@ public class ToolTipLayout extends RelativeLayout {
      * @param animate True to animate the transition.
      */
     public void dismiss(boolean animate) {
+        mToolTips.clear();
+        
         if (animate) {
+
+            final List<View> viewsToRemove = new ArrayList<>();
             List<Animator> a = new ArrayList<>();
             for (int i = 0; i < getChildCount(); i++) {
                 a.add(ObjectAnimator.ofFloat(getChildAt(i), View.ALPHA, 0));
+                viewsToRemove.add(getChildAt(i));
             }
 
             AnimatorSet s = new AnimatorSet();
             s.playTogether(a);
             s.addListener(new AnimatorListener() {
-                @Override public void onAnimationStart(Animator animation) {}
-                @Override public void onAnimationEnd(Animator animation) {
-                    removeAllViews();
-                    mToolTips.clear();
+                @Override public void onAnimationStart(Animator animation) {
                 }
-                @Override public void onAnimationCancel(Animator animation) {}
-                @Override public void onAnimationRepeat(Animator animation) {}
+
+                @Override public void onAnimationEnd(Animator animation) {
+                    for (View v : viewsToRemove) {
+                        removeView(v);
+                    }
+                }
+
+                @Override public void onAnimationCancel(Animator animation) {
+                }
+
+                @Override public void onAnimationRepeat(Animator animation) {
+                }
             });
             s.start();
         } else {
             removeAllViews();
-            mToolTips.clear();
         }
     }
 
