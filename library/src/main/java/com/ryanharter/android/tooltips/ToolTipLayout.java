@@ -109,43 +109,44 @@ public class ToolTipLayout extends RelativeLayout {
                         t.getView().setAlpha(0);
                         animators.add(ObjectAnimator.ofFloat(t.getView(), View.ALPHA, 0, 1));
 
-                        final float finalPosition = mFinalPositions.get(t);
-                        if ((Gravity.VERTICAL_GRAVITY_MASK & t.getGravity()) == Gravity.TOP) {
-                            float start = finalPosition - t.getView().getHeight() / 2;
-                            t.getView().setY(start);
-
-                            animators.add(ObjectAnimator
-                                    .ofFloat(t.getView(), View.TRANSLATION_Y,
-                                            start,
-                                            finalPosition));
-                        } else if ((Gravity.VERTICAL_GRAVITY_MASK & t.getGravity())
-                                == Gravity.BOTTOM) {
-                            float start = finalPosition + t.getView().getHeight() / 2;
-                            t.getView().setY(start);
-
-                            animators.add(ObjectAnimator
-                                    .ofFloat(t.getView(), View.TRANSLATION_Y,
-                                            start,
-                                            finalPosition));
-                        } else if ((Gravity.HORIZONTAL_GRAVITY_MASK & t.getGravity())
-                                == Gravity.LEFT) {
-                            float start = finalPosition - t.getView().getWidth() / 2;
-                            t.getView().setX(start);
-
-                            animators.add(ObjectAnimator
-                                    .ofFloat(t.getView(), View.TRANSLATION_X,
-                                            start,
-                                            finalPosition));
-                        } else if ((Gravity.HORIZONTAL_GRAVITY_MASK & t.getGravity())
-                                == Gravity.RIGHT) {
-                            float start = finalPosition + t.getView().getWidth() / 2;
-                            t.getView().setX(start);
-
-                            animators.add(ObjectAnimator
-                                    .ofFloat(t.getView(), View.TRANSLATION_X,
-                                            start,
-                                            finalPosition));
-                        }
+                        // TODO Restore this once I can fix the flicker
+//                        final float finalPosition = mFinalPositions.get(t);
+//                        if ((Gravity.VERTICAL_GRAVITY_MASK & t.getGravity()) == Gravity.TOP) {
+//                            float start = finalPosition - t.getView().getHeight() / 2;
+//                            t.getView().setY(start);
+//
+//                            animators.add(ObjectAnimator
+//                                    .ofFloat(t.getView(), View.TRANSLATION_Y,
+//                                            start,
+//                                            finalPosition));
+//                        } else if ((Gravity.VERTICAL_GRAVITY_MASK & t.getGravity())
+//                                == Gravity.BOTTOM) {
+//                            float start = finalPosition + t.getView().getHeight() / 2;
+//                            t.getView().setY(start);
+//
+//                            animators.add(ObjectAnimator
+//                                    .ofFloat(t.getView(), View.TRANSLATION_Y,
+//                                            start,
+//                                            finalPosition));
+//                        } else if ((Gravity.HORIZONTAL_GRAVITY_MASK & t.getGravity())
+//                                == Gravity.LEFT) {
+//                            float start = finalPosition - t.getView().getWidth() / 2;
+//                            t.getView().setX(start);
+//
+//                            animators.add(ObjectAnimator
+//                                    .ofFloat(t.getView(), View.TRANSLATION_X,
+//                                            start,
+//                                            finalPosition));
+//                        } else if ((Gravity.HORIZONTAL_GRAVITY_MASK & t.getGravity())
+//                                == Gravity.RIGHT) {
+//                            float start = finalPosition + t.getView().getWidth() / 2;
+//                            t.getView().setX(start);
+//
+//                            animators.add(ObjectAnimator
+//                                    .ofFloat(t.getView(), View.TRANSLATION_X,
+//                                            start,
+//                                            finalPosition));
+//                        }
                     }
 
                     AnimatorSet s = new AnimatorSet();
