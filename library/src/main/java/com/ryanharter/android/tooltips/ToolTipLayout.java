@@ -1,6 +1,7 @@
 package com.ryanharter.android.tooltips;
 
 import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -59,8 +60,28 @@ public class ToolTipLayout extends RelativeLayout {
      * @param animate True to animate the transition.
      */
     public void dismiss(boolean animate) {
-        removeAllViews();
-        mToolTips.clear();
+        if (animate) {
+            List<Animator> a = new ArrayList<>();
+            for (int i = 0; i < getChildCount(); i++) {
+                a.add(ObjectAnimator.ofFloat(getChildAt(i), View.ALPHA, 0));
+            }
+
+            AnimatorSet s = new AnimatorSet();
+            s.playTogether(a);
+            s.addListener(new AnimatorListener() {
+                @Override public void onAnimationStart(Animator animation) {}
+                @Override public void onAnimationEnd(Animator animation) {
+                    removeAllViews();
+                    mToolTips.clear();
+                }
+                @Override public void onAnimationCancel(Animator animation) {}
+                @Override public void onAnimationRepeat(Animator animation) {}
+            });
+            s.start();
+        } else {
+            removeAllViews();
+            mToolTips.clear();
+        }
     }
 
     public void addTooltip(ToolTip tooltip) {
