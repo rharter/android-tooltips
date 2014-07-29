@@ -9,7 +9,7 @@ Android ToolTips is available on Maven Central, so you can use the normal method
 Gradle
 
 ```
-compile 'com.ryanharter.android.tooltips:library:0.0.1'
+compile 'com.ryanharter.android.tooltips:library:0.0.3'
 ```
 
 Maven 
@@ -18,7 +18,7 @@ Maven
 <dependency>
     <groupId>com.ryanharter.android.tooltips</groupId>
     <artifactId>library</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.3</version>
 </dependency>
 ```
 

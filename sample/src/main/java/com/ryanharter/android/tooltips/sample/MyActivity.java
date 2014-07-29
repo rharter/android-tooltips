@@ -102,7 +102,7 @@ public class MyActivity extends Activity {
         right.setOnClickListener(new OnClickListener() {
             @Override public void onClick(View v) {
                 View contentView = createToolTipView("Tooltip right of the button",
-                        Color.BLACK, getResources().getColor(android.R.color.holo_orange_light));
+                        Color.WHITE, getResources().getColor(R.color.trans_black));
                 contentView.setLayoutParams(new LayoutParams(
                         LayoutParams.WRAP_CONTENT,
                         LayoutParams.WRAP_CONTENT
@@ -110,7 +110,7 @@ public class MyActivity extends Activity {
 
                 ToolTip t = new Builder(MyActivity.this)
                         .anchor(right)
-                        .color(getResources().getColor(android.R.color.holo_orange_light))
+                        .color(getResources().getColor(R.color.trans_black))
                         .gravity(Gravity.RIGHT)
                         .pointerSize(POINTER_SIZE)
                         .contentView(contentView)
