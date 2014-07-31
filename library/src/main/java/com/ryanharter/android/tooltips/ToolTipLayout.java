@@ -105,10 +105,10 @@ public class ToolTipLayout extends RelativeLayout {
     public void addTooltip(ToolTip tooltip, boolean animate) {
         mToolTips.add(tooltip);
         View v = tooltip.getView();
-        if (tooltip.isDismissView()) {
+        if (tooltip.isDismissOnTouch()) {
             v.setOnClickListener(new OnClickListener() {
                 @Override public void onClick(View v) {
-                    dismiss(v);
+                    dismiss();
                 }
             });
         }
