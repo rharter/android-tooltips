@@ -20,6 +20,7 @@ public class ToolTip {
     private int mColor;
     private int mPointerSize;
     private boolean mDismissOnTouch;
+    private boolean mDismissOnTouchOutside;
 
     private View mView;
 
@@ -87,6 +88,13 @@ public class ToolTip {
         mDismissOnTouch = dismissOnTouch;
     }
 
+    public boolean isDismissOnTouchOutside() {
+        return mDismissOnTouchOutside;
+    }
+    public void setDismissOnTouchOutside(boolean dismissOnTouchOutside) {
+        mDismissOnTouchOutside = dismissOnTouchOutside;
+    }
+
     /**
      * Builds the tooltip view for display.  The callout arrow is
      * defined by <code>gravity</code>, but defaults to alignment
@@ -138,6 +146,7 @@ public class ToolTip {
         private int color;
         private int pointerSize;
         private boolean dismissOnTouch;
+        private boolean dismissOnTouchOutside;
 
         public Builder(Context context) {
             this.context = context;
@@ -173,6 +182,11 @@ public class ToolTip {
             return this;
         }
 
+        public Builder dismissOnTouchOutside(boolean dismiss) {
+            this.dismissOnTouchOutside = dismiss;
+            return this;
+        }
+
         public ToolTip build() {
             return new ToolTip(this);
         }
@@ -186,6 +200,7 @@ public class ToolTip {
         setAnchorView(builder.anchor);
         setView(makeView(builder.context));
         setDismissOnTouch(builder.dismissOnTouch);
+        setDismissOnTouchOutside(builder.dismissOnTouchOutside);
     }
 
 }

@@ -3,9 +3,11 @@ package com.ryanharter.android.tooltips;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,29 +25,61 @@ import java.util.Map;
  */
 public class ToolTipLayout extends RelativeLayout {
 
+    public interface ToolTipDismissedListener {
+        public void onToolTipDismissed();
+    }
+
+    private boolean bDismissOnTouch;
+    private boolean bDismissOnTouchOutside;
     private ToolTip mToolTip;
     private View mToolTipView;
+
+    private ToolTipDismissedListener mListener;
 
     private List<ToolTip> mToolTips = new ArrayList<>();
 
     private boolean mDimensionsKnown;
+    private boolean mDim;
 
+    private int mDimColor = 0x7f000000;
+    private int mTransparentColor = 0x00000000;
     private int mTargetX;
     private int mTargetY;
     private WeakReference<View> mAnchorView;
+    private GestureDetector mGestureDetector;
 
     public ToolTipLayout(Context context) {
         this(context, null);
+        init(context);
     }
 
     public ToolTipLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
+        init(context);
     }
 
     public ToolTipLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        init(context);
     }
 
+    private void init(Context context) {
+        mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                if (bDismissOnTouchOutside) {
+                    return true;
+                }
+                return super.onDown(e);
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                dismiss();
+                return true;
+            }
+        });
+    }
     /**
      * Dismisses all tooltips currently being displayed using
      * the default animation.
@@ -71,27 +105,45 @@ public class ToolTipLayout extends RelativeLayout {
                 viewsToRemove.add(getChildAt(i));
             }
 
+            if (mDim) {
+                ObjectAnimator animator = ObjectAnimator.ofInt(ToolTipLayout.this, "backgroundColor", mDimColor, mTransparentColor);
+                animator.setEvaluator(new ArgbEvaluator());
+                a.add(animator);
+            }
             AnimatorSet s = new AnimatorSet();
             s.playTogether(a);
             s.addListener(new AnimatorListener() {
-                @Override public void onAnimationStart(Animator animation) {
+                @Override
+                public void onAnimationStart(Animator animation) {
                 }
 
-                @Override public void onAnimationEnd(Animator animation) {
+                @Override
+                public void onAnimationEnd(Animator animation) {
                     for (View v : viewsToRemove) {
                         removeView(v);
                     }
+                    if (mListener != null) {
+                        mListener.onToolTipDismissed();
+                    }
                 }
 
-                @Override public void onAnimationCancel(Animator animation) {
+                @Override
+                public void onAnimationCancel(Animator animation) {
                 }
 
-                @Override public void onAnimationRepeat(Animator animation) {
+                @Override
+                public void onAnimationRepeat(Animator animation) {
                 }
             });
             s.start();
         } else {
             removeAllViews();
+            if (mDim) {
+                setBackgroundColor(mTransparentColor);
+            }
+            if (mListener != null) {
+                mListener.onToolTipDismissed();
+            }
         }
     }
 
@@ -99,18 +151,30 @@ public class ToolTipLayout extends RelativeLayout {
         addTooltip(tooltip, true);
     }
 
+    public void setToolTipDismissedListener(ToolTipDismissedListener toolTipDismissedListener) {
+        mListener = toolTipDismissedListener;
+    }
+
+    public void setDimWhenShowingToolTips(boolean dim) {
+        mDim = dim;
+    }
+
     private Map<ToolTip, Float> mFinalPositions = new HashMap<>();
     private boolean mShouldRemoveObserver;
 
-    public void addTooltip(ToolTip tooltip, boolean animate) {
+    public void addTooltip(ToolTip tooltip, final boolean animate) {
         mToolTips.add(tooltip);
         View v = tooltip.getView();
-        if (tooltip.isDismissOnTouch()) {
-            v.setOnClickListener(new OnClickListener() {
-                @Override public void onClick(View v) {
+        bDismissOnTouch = tooltip.isDismissOnTouch();
+        bDismissOnTouchOutside = tooltip.isDismissOnTouchOutside();
+        if (bDismissOnTouch) {
+            OnClickListener listener = new OnClickListener() {
+                @Override
+                public void onClick(View v) {
                     dismiss();
                 }
-            });
+            };
+            v.setOnClickListener(listener);
         }
         addView(v);
         requestLayout();
@@ -119,7 +183,8 @@ public class ToolTipLayout extends RelativeLayout {
             // We use a two pass preDrawListener so we can get the post animation
             // position of the item and then animate it.
             getViewTreeObserver().addOnPreDrawListener(new OnPreDrawListener() {
-                @Override public boolean onPreDraw() {
+                @Override
+                public boolean onPreDraw() {
 
                     if (!mShouldRemoveObserver) {
                         mShouldRemoveObserver = true;
@@ -144,6 +209,12 @@ public class ToolTipLayout extends RelativeLayout {
                     getViewTreeObserver().removeOnPreDrawListener(this);
 
                     List<Animator> animators = new ArrayList<>();
+
+                    if (mDim) {
+                        ObjectAnimator animator = ObjectAnimator.ofInt(ToolTipLayout.this, "backgroundColor", mTransparentColor, mDimColor);
+                        animator.setEvaluator(new ArgbEvaluator());
+                        animators.add(animator);
+                    }
 
                     for (ToolTip t : mToolTips) {
                         t.getView().setAlpha(0);
@@ -196,10 +267,15 @@ public class ToolTipLayout extends RelativeLayout {
                     return true;
                 }
             });
+        } else {
+            if (mDim) {
+                setBackgroundColor(mDimColor);
+            }
         }
     }
 
-    @Override protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
 
         int[] containerLocation = new int[2];
@@ -249,10 +325,6 @@ public class ToolTipLayout extends RelativeLayout {
         }
     }
 
-    @Override public boolean onTouchEvent(MotionEvent event) {
-        return super.onTouchEvent(event);
-    }
-
     public void alignPointer(View pointer, int position, int gravity) {
         View parent = (View) pointer.getParent();
         int[] parentLocation = new int[2];
@@ -263,5 +335,13 @@ public class ToolTipLayout extends RelativeLayout {
         } else {
             pointer.setY(position - parentLocation[1] - pointer.getHeight() / 2);
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (bDismissOnTouchOutside && mToolTips.size() > 0) {
+            return mGestureDetector.onTouchEvent(event);
+        }
+        return super.onTouchEvent(event);
     }
 }
